@@ -1,2 +1,3 @@
-# climate_inventory
+# Climate Inventory
+
 Repository with the Climate Inventory Automations
