@@ -817,7 +817,7 @@ onroad_payload = {
     "hash": "15de19c9f69f14de472eff0aaf487b1bfb411f06",
 }
 
-off_road_payload = {
+offroad_payload = {
     "form": {
         "output": "Offroad",
         "regionType": "Sub-Area",
