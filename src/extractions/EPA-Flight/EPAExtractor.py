@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+from epa_payloads import payload_facilities
 
 
 class EPAExtractor:
@@ -21,8 +22,9 @@ class EPAExtractor:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
             "X-Requested-With": "XMLHttpRequest",
         }
+        self.payload_facilities = payload_facilities
 
-    def get_facilities(self, payload_facilities, year_to_query=2021):
+    def get_facilities(self, year_to_query=2021):
         """
         Makes a request to the FACILITIES_API and returns a dataframe of the results.
 
@@ -34,7 +36,7 @@ class EPAExtractor:
         payload_facilities["reportingYear"] = str(year_to_query)
 
         r_facilities = requests.post(
-            self.FACILITIES_API, json=payload_facilities, headers=self.headers
+            self.FACILITIES_API, json=self.payload_facilities, headers=self.headers
         )
         content = r_facilities.json()
         unit = content["unit"]
