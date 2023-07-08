@@ -41,10 +41,14 @@ class EPAExtractor:
         content = r_facilities.json()
         unit = content["unit"]
         year = content["year"]
-        df_facilities = pd.DataFrame(content["data"]["rows"])
-        df_facilities.drop(columns=["id", "icons"], inplace=True)
-        df_facilities.rename(columns={"total": "metric_tons_CO2"}, inplace=True)
-        df_facilities.loc[:, "unit"] = unit
-        df_facilities.loc[:, "year"] = year
+        try:
+            df_facilities = pd.DataFrame(content["data"]["rows"])
+            df_facilities.drop(columns=["id", "icons"], inplace=True)
+            df_facilities.rename(columns={"total": "metric_tons_CO2"}, inplace=True)
+            df_facilities.loc[:, "unit"] = unit
+            df_facilities.loc[:, "year"] = year
+        except Exception:
+            print("Data not found")
+            df_facilities = pd.DataFrame([])
 
         return df_facilities
