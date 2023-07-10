@@ -6,14 +6,15 @@ import pandas as pd
 
 
 class USCensus:
-    def __init__(self):
-        self.API_METADATA = "https://data.census.gov/api/search/metadata/table?id=ACSDT1Y2021.B25040&g=160XX00US0643000"
-        self.API_TABLE = "https://data.census.gov/api/access/data/table?id=ACSDT1Y2021.B25040&g=160XX00US0643000"
+    def __init__(self, year_to_query=2021):
+        self.year_to_query = year_to_query
+        self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT1Y{self.year_to_query}.B25040&g=160XX00US0643000"
+        self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT1Y{self.year_to_query}.B25040&g=160XX00US0643000"
 
         self.headers = {
             "authority": "data.census.gov",
             "method": "GET",
-            "path": "/table?q=B25040&g=160XX00US0643000&tid=ACSDT1Y2021.B25040",
+            "path": f"/table?q=B25040&g=160XX00US0643000&tid=ACSDT1Y{self.year_to_query}.B25040",
             "scheme": "https",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "Accept-Encoding": "gzip, deflate, br",
@@ -36,14 +37,18 @@ class USCensus:
         """
         r = requests.get(self.API_METADATA, headers=self.headers)
         self.metadata_content = r.json()
+        self.dataset_info = self.metadata_content["response"]["metadataContent"][
+            "dataset"
+        ]
 
     def get_mapping_dict(self):
         """
         Gets mapping dictionary from metadata content
         """
+        DATA_INDEX = 2
         mapping_content = self.metadata_content["response"]["metadataContent"][
             "dimensions"
-        ][2]["categories"]
+        ][DATA_INDEX]["categories"]
         # Note - M is for margin of error and E is for estimate
         self.mapping_dict = {}
 
@@ -62,13 +67,16 @@ class USCensus:
         Gets data table from API and parses the data
         into a clean dataframe
         """
+        LABEL_INDEX = 0
+        DATA_INDEX = 1
         r = requests.get(self.API_TABLE, headers=self.headers)
         table_content = r.json()["response"]
 
-        labels = table_content["data"][0]
-        data = table_content["data"][1]
+        labels = table_content["data"][LABEL_INDEX]
+        data = table_content["data"][DATA_INDEX]
 
         df = pd.DataFrame.from_dict({"labels": labels, "data": data})
+        self.location = df.loc[df["labels"] == "NAME"]["data"].values[LABEL_INDEX]
         df = df.loc[df["labels"].isin(self.mapping_dict.keys())]
         df.replace(self.mapping_dict, inplace=True)
         df.dropna(inplace=True)
@@ -90,3 +98,30 @@ class USCensus:
         )
 
         self.parsed_data = df_pivot
+
+    def complete_df(self):
+        """
+        Completes dataframe with dataset information
+        """
+        self.parsed_data["year"] = self.dataset_info["vintage"]
+        self.parsed_data["name"] = self.dataset_info["name"]
+        self.parsed_data["program"] = self.dataset_info["program"]
+        self.parsed_data["subprogram"] = self.dataset_info["subProgram"]
+        self.parsed_data["location"] = self.location
+
+    def extract_data(self):
+        """
+        Extracts data from API
+        """
+        try:
+            self.get_metadata_content()
+            self.get_mapping_dict()
+            self.get_data_table()
+            self.complete_df()
+        except Exception as e:
+            print(
+                "Error extracting data from US Census API (data may not be available for {self.year_to_query})"
+            )
+            print(e)
+
+        return self.parsed_data
