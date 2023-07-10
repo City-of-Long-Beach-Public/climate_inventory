@@ -29,3 +29,31 @@ class USCensus:
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         }
+
+    def get_metadata_content(self):
+        """
+        Gets metadata content from API
+        """
+        r = requests.get(self.API_METADATA, headers=self.headers)
+        metadata_content = r.json()
+        self.metadata_content = metadata_content["response"]
+
+    def get_mapping_dict(self):
+        """
+        Gets mapping dictionary from metadata content
+        """
+        mapping_content = self.metadata_content["response"]["metadataContent"][
+            "dimensions"
+        ][2]["categories"]
+        # Note - M is for margin of error and E is for estimate
+        self.mapping_dict = {}
+
+        for item in mapping_content:
+            label = item["label"]
+
+            corresponding_ids = item["item_mapping"]
+            for corresponding_id in corresponding_ids:
+                if "E" in corresponding_id:
+                    self.mapping_dict[corresponding_id] = f"{label} Estimate"
+                else:
+                    self.mapping_dict[corresponding_id] = f"{label} Margin of Error"
