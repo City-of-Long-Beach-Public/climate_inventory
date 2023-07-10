@@ -7,6 +7,8 @@ import pandas as pd
 
 class USCensus:
     def __init__(self, year_to_query=2021, type_estimate="1Y"):
+        if type_estimate not in ["1Y", "5Y"]:
+            raise ValueError('type_estimate must be either "1Y" or "5Y"')
         self.year_to_query = year_to_query
         self.type_estimate = type_estimate
         self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT{self.type_estimate}{self.year_to_query}.B25040&g=160XX00US0643000"
