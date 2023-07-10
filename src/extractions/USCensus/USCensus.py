@@ -6,10 +6,11 @@ import pandas as pd
 
 
 class USCensus:
-    def __init__(self, year_to_query=2021):
+    def __init__(self, year_to_query=2021, type_estimate="1Y"):
         self.year_to_query = year_to_query
-        self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT1Y{self.year_to_query}.B25040&g=160XX00US0643000"
-        self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT1Y{self.year_to_query}.B25040&g=160XX00US0643000"
+        self.type_estimate = type_estimate
+        self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT{self.type_estimate}{self.year_to_query}.B25040&g=160XX00US0643000"
+        self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT{self.type_estimate}{self.year_to_query}.B25040&g=160XX00US0643000"
 
         self.headers = {
             "authority": "data.census.gov",
@@ -113,6 +114,9 @@ class USCensus:
         """
         Extracts data from API
         """
+        print(
+            f"Extracting data from US Census API, {self.year_to_query}, {self.type_estimate}"
+        )
         try:
             self.get_metadata_content()
             print("Obtained metadata content")
@@ -124,6 +128,6 @@ class USCensus:
             print("Completed dataframe")
         except Exception as e:
             print(
-                "Error extracting data from US Census API (data may not be available for {self.year_to_query})"
+                f"Error extracting data from US Census API (data may not be available for {self.year_to_query}, {self.type_estimate})"
             )
             print(e)
