@@ -58,9 +58,9 @@ class USCensus:
             corresponding_ids = item["item_mapping"]
             for corresponding_id in corresponding_ids:
                 if "E" in corresponding_id:
-                    self.mapping_dict[corresponding_id] = f"{label} Estimate"
+                    self.mapping_dict[corresponding_id] = f"{label}-Estimate"
                 else:
-                    self.mapping_dict[corresponding_id] = f"{label} Margin of Error"
+                    self.mapping_dict[corresponding_id] = f"{label}-Margin of Error"
 
     def get_data_table(self):
         """
@@ -115,13 +115,15 @@ class USCensus:
         """
         try:
             self.get_metadata_content()
+            print("Obtained metadata content")
             self.get_mapping_dict()
+            print("Obtained mapping dictionary")
             self.get_data_table()
+            print("Obtained data table")
             self.complete_df()
+            print("Completed dataframe")
         except Exception as e:
             print(
                 "Error extracting data from US Census API (data may not be available for {self.year_to_query})"
             )
             print(e)
-
-        return self.parsed_data
