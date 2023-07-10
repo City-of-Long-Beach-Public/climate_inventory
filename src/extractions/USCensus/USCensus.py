@@ -56,3 +56,37 @@ class USCensus:
                     self.mapping_dict[corresponding_id] = f"{label} Estimate"
                 else:
                     self.mapping_dict[corresponding_id] = f"{label} Margin of Error"
+
+    def get_data_table(self):
+        """
+        Gets data table from API and parses the data
+        into a clean dataframe
+        """
+        r = requests.get(self.API_TABLE, headers=self.headers)
+        table_content = r.json()["response"]
+
+        labels = table_content["data"][0]
+        data = table_content["data"][1]
+
+        df = pd.DataFrame.from_dict({"labels": labels, "data": data})
+        df = df.loc[df["labels"].isin(self.mapping_dict.keys())]
+        df.replace(self.mapping_dict, inplace=True)
+        df.dropna(inplace=True)
+
+        # Split 'labels' into 'label' and 'metric'
+        df[["label", "metric"]] = df["labels"].str.rsplit("-", n=1, expand=True)
+
+        # Pivot to get 'Estimate' and 'Margin of Error' as separate columns
+        df_pivot = df.pivot(index="label", columns="metric", values="data")
+
+        # Reset index
+        df_pivot = df_pivot.reset_index()
+
+        # Rename columns
+        df_pivot.columns.name = ""
+        df_pivot.rename(
+            columns={"Estimate": "estimate", "Margin of Error": "margin of error"},
+            inplace=True,
+        )
+
+        self.parsed_data = df_pivot
