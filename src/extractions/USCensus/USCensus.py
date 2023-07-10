@@ -35,8 +35,7 @@ class USCensus:
         Gets metadata content from API
         """
         r = requests.get(self.API_METADATA, headers=self.headers)
-        metadata_content = r.json()
-        self.metadata_content = metadata_content["response"]
+        self.metadata_content = r.json()
 
     def get_mapping_dict(self):
         """
