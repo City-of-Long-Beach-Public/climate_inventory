@@ -64,7 +64,7 @@ class CARBExtractor:
 
         self.urls_df = df
 
-    def get_longbeach_data(self):
+    def get_longbeach_data(self, year=None):
         """
         Gets dataframe with all of the urls with GHG data for
         the city of Long Beach
@@ -80,9 +80,8 @@ class CARBExtractor:
             if not any(word in url for word in self.undesired_words)
         ]
         mega_df = pd.DataFrame([])
-        undesired_words = ["facility", "entity", "archive"]
         for xlsx_url in xlsx_urls:
-            if any(word in xlsx_url.lower() for word in undesired_words):
+            if any(word in xlsx_url.lower() for word in self.undesired_words):
                 print(f"Skipping {xlsx_url}")
                 continue
             response = requests.get(xlsx_url)
@@ -96,7 +95,11 @@ class CARBExtractor:
             key_of_interest = None
             for key in dataframes.keys():
                 if "GHG Data" in key:
-                    key_of_interest = key
+                    if year is not None:
+                        if str(year) in key:
+                            key_of_interest = key
+                    else:
+                        key_of_interest = key
 
             if key_of_interest is None:
                 print(f"Skipping {xlsx_url}")
