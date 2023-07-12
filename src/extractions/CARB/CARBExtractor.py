@@ -34,6 +34,8 @@ class CARBExtractor:
         self.URL = URL
         self.headers = headers
         self.undesired_words = ["facility", "entity", "archive"]
+        # Getting urls and names
+        self.get_urls_df()
 
     def get_urls_df(self):
         """
