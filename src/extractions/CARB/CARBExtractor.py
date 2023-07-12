@@ -2,6 +2,7 @@
 
 import requests
 import pandas as pd
+from io import BytesIO
 from bs4 import BeautifulSoup
 
 URL = "https://ww2.arb.ca.gov/mrr-data"
@@ -32,6 +33,7 @@ class CARBExtractor:
     def __init__(self):
         self.URL = URL
         self.headers = headers
+        self.undesired_words = ["facility", "entity", "archive"]
 
     def get_urls_df(self):
         """
@@ -62,41 +64,58 @@ class CARBExtractor:
 
         self.urls_df = df
 
-    mega_df = pd.DataFrame([])
-    undesired_words = ["facility", "entity", "archive"]
-    for xlsx_url in xlsx_urls:
-        if any(word in xlsx_url.lower() for word in undesired_words):
-            print(f"Skipping {xlsx_url}")
-            continue
-        response = requests.get(xlsx_url)
-        xls_file = pd.ExcelFile(BytesIO(response.content))
-        # Create a dictionary of DataFrames, with sheet name as key
-        dataframes = {
-            sheet_name: xls_file.parse(sheet_name)
-            for sheet_name in xls_file.sheet_names
-        }
+    def get_longbeach_data(self):
+        """
+        Gets dataframe with all of the urls with GHG data for
+        the city of Long Beach
 
-        key_of_interest = None
-        for key in dataframes.keys():
-            if "GHG Data" in key:
-                key_of_interest = key
+        Returns:
+            df (pd.DataFrame): dataframe with urls and names
+        """
+        xlsx_urls = self.urls_df["url"].tolist()
 
-        if key_of_interest is None:
-            print(f"Skipping {xlsx_url}")
-            continue
+        xlsx_urls = [
+            url
+            for url in xlsx_urls
+            if not any(word in url for word in self.undesired_words)
+        ]
+        mega_df = pd.DataFrame([])
+        undesired_words = ["facility", "entity", "archive"]
+        for xlsx_url in xlsx_urls:
+            if any(word in xlsx_url.lower() for word in undesired_words):
+                print(f"Skipping {xlsx_url}")
+                continue
+            response = requests.get(xlsx_url)
+            xls_file = pd.ExcelFile(BytesIO(response.content))
+            # Create a dictionary of DataFrames, with sheet name as key
+            dataframes = {
+                sheet_name: xls_file.parse(sheet_name)
+                for sheet_name in xls_file.sheet_names
+            }
 
-        ghg_data = dataframes[key_of_interest]
-        # Remove rows with several NaNs
-        ghg_data = ghg_data.dropna(thresh=10)
-        # First row is the header
-        ghg_data.columns = ghg_data.iloc[0]
-        # Remove rows
-        longbeach_df = ghg_data.loc[
-            ghg_data.loc[:, "City"] == "Long Beach"
-        ].reset_index(drop=True)
-        # Remove columns with NaNs
-        longbeach_df = longbeach_df.dropna(axis=1, how="all")
-        # Remove \n in column names
-        longbeach_df.columns = longbeach_df.columns.str.replace("\n", " ")
+            key_of_interest = None
+            for key in dataframes.keys():
+                if "GHG Data" in key:
+                    key_of_interest = key
 
-        mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
+            if key_of_interest is None:
+                print(f"Skipping {xlsx_url}")
+                continue
+
+            ghg_data = dataframes[key_of_interest]
+            # Remove rows with several NaNs
+            ghg_data = ghg_data.dropna(thresh=10)
+            # First row is the header
+            ghg_data.columns = ghg_data.iloc[0]
+            # Remove rows
+            longbeach_df = ghg_data.loc[
+                ghg_data.loc[:, "City"] == "Long Beach"
+            ].reset_index(drop=True)
+            # Remove columns with NaNs
+            longbeach_df = longbeach_df.dropna(axis=1, how="all")
+            # Remove \n in column names
+            longbeach_df.columns = longbeach_df.columns.str.replace("\n", " ")
+
+            mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
+
+        self.longbeach_df = mega_df
