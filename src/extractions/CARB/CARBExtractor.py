@@ -61,3 +61,42 @@ class CARBExtractor:
         df = pd.DataFrame(href_dicts)
 
         self.urls_df = df
+
+    mega_df = pd.DataFrame([])
+    undesired_words = ["facility", "entity", "archive"]
+    for xlsx_url in xlsx_urls:
+        if any(word in xlsx_url.lower() for word in undesired_words):
+            print(f"Skipping {xlsx_url}")
+            continue
+        response = requests.get(xlsx_url)
+        xls_file = pd.ExcelFile(BytesIO(response.content))
+        # Create a dictionary of DataFrames, with sheet name as key
+        dataframes = {
+            sheet_name: xls_file.parse(sheet_name)
+            for sheet_name in xls_file.sheet_names
+        }
+
+        key_of_interest = None
+        for key in dataframes.keys():
+            if "GHG Data" in key:
+                key_of_interest = key
+
+        if key_of_interest is None:
+            print(f"Skipping {xlsx_url}")
+            continue
+
+        ghg_data = dataframes[key_of_interest]
+        # Remove rows with several NaNs
+        ghg_data = ghg_data.dropna(thresh=10)
+        # First row is the header
+        ghg_data.columns = ghg_data.iloc[0]
+        # Remove rows
+        longbeach_df = ghg_data.loc[
+            ghg_data.loc[:, "City"] == "Long Beach"
+        ].reset_index(drop=True)
+        # Remove columns with NaNs
+        longbeach_df = longbeach_df.dropna(axis=1, how="all")
+        # Remove \n in column names
+        longbeach_df.columns = longbeach_df.columns.str.replace("\n", " ")
+
+        mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
