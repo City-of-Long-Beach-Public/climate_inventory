@@ -1,3 +1,4 @@
+"""Scrapes data from the California Air Resources Board website"""
 # California Air Resources Board
 
 import requests
@@ -34,6 +35,8 @@ class CARBExtractor:
         self.URL = URL
         self.headers = headers
         self.undesired_words = ["facility", "entity", "archive"]
+        # Number of records needed for a row to be considered valid
+        self.NA_THRESH = 10
         # Getting urls and names
         self.get_urls_df()
 
@@ -109,7 +112,7 @@ class CARBExtractor:
 
             ghg_data = dataframes[key_of_interest]
             # Remove rows with several NaNs
-            ghg_data = ghg_data.dropna(thresh=10)
+            ghg_data = ghg_data.dropna(thresh=self.NA_THRESH)
             # First row is the header
             ghg_data.columns = ghg_data.iloc[0]
             # Remove rows
