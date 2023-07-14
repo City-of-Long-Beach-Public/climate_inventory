@@ -1,4 +1,4 @@
-"""Class to extract data from EPA Hub API"""
+"""Class to extract data from EPA Hub website"""
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -58,4 +58,4 @@ class EPAHub:
                 href_dicts.append(href_dict)
 
         # Create dataframe
-        df = pd.DataFrame.from_dict(href_dicts)
+        self.urls_df = pd.DataFrame.from_dict(href_dicts)
