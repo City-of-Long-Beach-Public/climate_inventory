@@ -1,6 +1,8 @@
 """Class to extract data from EPA Hub website"""
+import re
 import requests
 import pandas as pd
+from io import BytesIO
 from bs4 import BeautifulSoup
 
 
@@ -59,3 +61,38 @@ class EPAHub:
 
         # Create dataframe
         self.urls_df = pd.DataFrame.from_dict(href_dicts)
+
+    def get_emission_factors_df(self, year):
+        """
+        Downloads excel from the corresponding year
+        """
+        xlsx_urls = self.urls_df["url"].tolist()
+        undesired_words = ["pdf"]
+        LAST_INDEX = -1
+
+        xlsx_urls = [
+            url for url in xlsx_urls if not any(word in url for word in undesired_words)
+        ]
+        for xlsx_url in xlsx_urls:
+            filename = xlsx_url.split("/")[-1]
+            response = requests.get(xlsx_url, headers=self.headers)
+            xls_file = pd.ExcelFile(BytesIO(response.content))
+            # Create a dictionary of DataFrames, with sheet name as key
+            dataframes = {
+                sheet_name: xls_file.parse(sheet_name)
+                for sheet_name in xls_file.sheet_names
+            }
+            key_of_interest = None
+            for key in dataframes.keys():
+                if "Hub" in key:
+                    key_of_interest = key
+
+            if key_of_interest is None:
+                print(f"Skipping {xlsx_url}")
+                continue
+
+            ghg_data = dataframes[key_of_interest]
+            ghg_data = ghg_data.dropna(axis=1, how="all")
+            # Remove rows with several NaNs
+            ghg_data = ghg_data.dropna(axis=0, thresh=2)
+            ghg_data.reset_index(drop=True, inplace=True)
