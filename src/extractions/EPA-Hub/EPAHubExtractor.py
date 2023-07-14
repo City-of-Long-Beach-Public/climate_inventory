@@ -1,6 +1,7 @@
 """Class to extract data from EPA Hub API"""
 import requests
 import pandas as pd
+from bs4 import BeautifulSoup
 
 
 class EPAHub:
@@ -26,3 +27,35 @@ class EPAHub:
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         }
+
+    def get_urls_df(self):
+        """
+        Gets dataframe with all of the urls with GHG data and
+        their corresponding names
+        """
+        r = requests.get(self.URL, headers=self.headers)
+        soup = BeautifulSoup(r.content, "html.parser")
+        # Get all hrefs and their text
+        href_dicts = []
+        hrefs = soup.find_all("a")
+        for href in hrefs:
+            href_dict = {}
+            text = href.text
+            url = href.get("href")
+
+            if "GHG" not in text:
+                continue
+
+            if "xls" in url:
+                href_dict["name"] = str(text).replace("\n", "")
+                href_dict["url"] = f"https:{url}"
+                href_dicts.append(href_dict)
+
+            elif "pdf" in url:
+                href_dict["name"] = str(text).replace("\n", "")
+                href_dict["url"] = f"https:{url}"
+
+                href_dicts.append(href_dict)
+
+        # Create dataframe
+        df = pd.DataFrame.from_dict(href_dicts)
