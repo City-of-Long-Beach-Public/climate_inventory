@@ -7,7 +7,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 
 
-class EPAHub:
+class EPAHubExtractor:
     def __init__(self):
         self.URL = "https://www.epa.gov/climateleadership/ghg-emission-factors-hub"
         self.headers = {
@@ -33,6 +33,10 @@ class EPAHub:
 
         self.undesired_words = ["pdf"]
         self.NA_THRESH = 2
+
+        # Get urls dataframe
+        print("Getting urls dataframe...")
+        self.get_urls_df()
 
     def get_urls_df(self):
         """
