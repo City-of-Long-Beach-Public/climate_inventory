@@ -58,12 +58,12 @@ class EPAHubExtractor:
 
             if "xls" in url:
                 href_dict["name"] = str(text).replace("\n", "")
-                href_dict["url"] = f"https:{url}"
+                href_dict["url"] = f"https://www.epa.gov{url}"
                 href_dicts.append(href_dict)
 
             elif "pdf" in url:
                 href_dict["name"] = str(text).replace("\n", "")
-                href_dict["url"] = f"https:{url}"
+                href_dict["url"] = f"https://www.epa.gov{url}"
 
                 href_dicts.append(href_dict)
 
@@ -74,6 +74,7 @@ class EPAHubExtractor:
         """
         Downloads excel from the corresponding year
         """
+        print("Getting data from EPA Hub...")
         xlsx_urls = self.urls_df["url"].tolist()
         FIRST_INDEX = 0
         SECOND_INDEX = 1
@@ -108,3 +109,10 @@ class EPAHubExtractor:
         # Remove rows with several NaNs
         ghg_data = ghg_data.dropna(axis=0, thresh=self.NA_THRESH)
         ghg_data.reset_index(drop=True, inplace=True)
+
+        # Columns with unnamed renamed to Column 1, Column 2, etc.
+        ghg_data = ghg_data.rename(
+            columns=lambda x: f"Column {x+1}" if "Unnamed" in x else x
+        )
+
+        self.emissions_df = ghg_data
