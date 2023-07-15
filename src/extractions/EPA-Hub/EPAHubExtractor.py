@@ -1,9 +1,8 @@
 """Class to extract data from EPA Hub website"""
-import re
-import requests
-import pandas as pd
 from io import BytesIO
-from datetime import datetime
+
+import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
 
@@ -111,8 +110,8 @@ class EPAHubExtractor:
         ghg_data.reset_index(drop=True, inplace=True)
 
         # Columns with unnamed renamed to Column 1, Column 2, etc.
-        ghg_data = ghg_data.rename(
-            columns=lambda x: f"Column {x+1}" if "Unnamed" in x else x
-        )
+        cols = ghg_data.columns.tolist()
+        new_cols = [str(col).replace("Unnamed:", "Column") for col in cols]
+        ghg_data.columns = new_cols
 
         self.emissions_df = ghg_data
