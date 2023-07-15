@@ -3,6 +3,7 @@ import re
 import requests
 import pandas as pd
 from io import BytesIO
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 
@@ -29,6 +30,9 @@ class EPAHub:
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         }
+
+        self.undesired_words = ["pdf"]
+        self.NA_THRESH = 2
 
     def get_urls_df(self):
         """
@@ -67,32 +71,36 @@ class EPAHub:
         Downloads excel from the corresponding year
         """
         xlsx_urls = self.urls_df["url"].tolist()
-        undesired_words = ["pdf"]
-        LAST_INDEX = -1
+        FIRST_INDEX = 0
+        SECOND_INDEX = 1
 
         xlsx_urls = [
-            url for url in xlsx_urls if not any(word in url for word in undesired_words)
+            url
+            for url in xlsx_urls
+            if not any(word in url for word in self.undesired_words)
         ]
-        for xlsx_url in xlsx_urls:
-            filename = xlsx_url.split("/")[-1]
-            response = requests.get(xlsx_url, headers=self.headers)
-            xls_file = pd.ExcelFile(BytesIO(response.content))
-            # Create a dictionary of DataFrames, with sheet name as key
-            dataframes = {
-                sheet_name: xls_file.parse(sheet_name)
-                for sheet_name in xls_file.sheet_names
-            }
-            key_of_interest = None
-            for key in dataframes.keys():
-                if "Hub" in key:
-                    key_of_interest = key
 
-            if key_of_interest is None:
-                print(f"Skipping {xlsx_url}")
-                continue
+        urls_of_interest = [url for url in xlsx_urls if str(year) in url]
 
-            ghg_data = dataframes[key_of_interest]
-            ghg_data = ghg_data.dropna(axis=1, how="all")
-            # Remove rows with several NaNs
-            ghg_data = ghg_data.dropna(axis=0, thresh=2)
-            ghg_data.reset_index(drop=True, inplace=True)
+        if urls_of_interest:
+            xlsx_url = urls_of_interest[FIRST_INDEX]
+        else:
+            xlsx_url = xlsx_urls[SECOND_INDEX]
+
+        response = requests.get(xlsx_url, headers=self.headers)
+        xls_file = pd.ExcelFile(BytesIO(response.content))
+        # Create a dictionary of DataFrames, with sheet name as key
+        dataframes = {
+            sheet_name: xls_file.parse(sheet_name)
+            for sheet_name in xls_file.sheet_names
+        }
+        key_of_interest = None
+        for key in dataframes.keys():
+            if "Hub" in key:
+                key_of_interest = key
+
+        ghg_data = dataframes[key_of_interest]
+        ghg_data = ghg_data.dropna(axis=1, how="all")
+        # Remove rows with several NaNs
+        ghg_data = ghg_data.dropna(axis=0, thresh=self.NA_THRESH)
+        ghg_data.reset_index(drop=True, inplace=True)
