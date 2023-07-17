@@ -68,6 +68,4 @@ class GoogleScraper:
 
             buildings_dict_list.append(buildings_dict)
 
-        buildings_df = pd.DataFrame.from_dict(buildings_dict_list)
-
-        return buildings_df
+        self.buildings_df = pd.DataFrame.from_dict(buildings_dict_list)
