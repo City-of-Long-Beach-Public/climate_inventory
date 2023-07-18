@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from epa_payloads import payload_facilities
+from extractions.EPAFlight.epa_payloads import payload_facilities
 
 
 class EPAExtractor:

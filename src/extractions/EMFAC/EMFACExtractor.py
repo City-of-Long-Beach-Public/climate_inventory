@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime
 
 # Local imports
-from emfac_payloads import onroad_payload, offroad_payload
+from extractions.EMFAC.emfac_payloads import onroad_payload, offroad_payload
 
 # Global variables
 
