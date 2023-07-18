@@ -82,8 +82,14 @@ class GoogleScraper:
 
     @staticmethod
     def get_gpc_metrics(df):
-        # If travel bound is in-boundary, then the gpc distance is the same as the full distance
-        # otherwise, it is half of the full distance
+        """
+        Gets GPC metrics from the transportation df. We get distance km and
+        the corresponding co2 tons
+        """
+
+        # If travel bound is in-boundary, then the gpc distance is the same as the full
+        # distance otherwise, it is half of the full distance,
+        # same applies for co2e tons
         df.loc[:, "gpc distance km"] = df.loc[:, "full distance km"]
         df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "gpc distance km"] = (
             df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "full distance km"] / 2
@@ -95,6 +101,32 @@ class GoogleScraper:
         )
 
         return df
+
+    @staticmethod
+    def get_summed_data(df):
+        """
+        Uses the transportation df to calculate the total sum
+        of trips and km.
+
+        We then applicate the formula: (summed km * factor 2) / (factor 1)
+        """
+
+        summed_data = (
+            df.groupby(by=["year", "mode", "factor 1", "factor 2"]).sum().reset_index()
+        )
+        summed_data.loc[:, "travel bound"] = "TOTAL"
+        summed_data.loc[:, "full co2e tons"] = (
+            summed_data.loc[:, "full distance km"]
+            * summed_data.loc[:, "factor 2"]
+            / summed_data.loc[:, "factor 1"]
+        )
+        summed_data.loc[:, "gpc co2e tons"] = (
+            summed_data.loc[:, "gpc distance km"]
+            * summed_data.loc[:, "factor 2"]
+            / summed_data.loc[:, "factor 1"]
+        )
+
+        return summed_data
 
     def get_transportation_df(self):
         """
@@ -141,3 +173,8 @@ class GoogleScraper:
 
         # Get GPC metrics
         self.transportation_df = self.get_gpc_metrics(self.transportation_df)
+        summed_data = self.get_summed_data(self.transportation_df)
+
+        self.transportation_df = pd.concat(
+            [self.transportation_df, summed_data], ignore_index=True
+        )
