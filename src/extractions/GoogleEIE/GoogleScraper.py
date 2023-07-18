@@ -36,6 +36,9 @@ class GoogleScraper:
             10: "ON FOOT",
         }
 
+        # Perform initial request
+        self.initial_request()
+
     def initial_request(self):
         """
         Initial call to Google API to get the data
