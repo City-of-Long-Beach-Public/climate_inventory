@@ -115,3 +115,7 @@ class EPAHubExtractor:
         ghg_data.columns = new_cols
 
         self.emissions_df = ghg_data
+
+    def run(self, year):
+        self.get_emission_factors_df(year)
+        return self.emissions_df

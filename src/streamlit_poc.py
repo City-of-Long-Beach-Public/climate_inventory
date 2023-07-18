@@ -11,16 +11,29 @@ from extractions.USCensus.USCensus import USCensus
 
 
 # Initialize Extractors
-carb_extractor = CARBExtractor()
-epa_extractor = EPAExtractor()
-epa_hub_extractor = EPAHubExtractor()
-emfac_extractor = EMFACExtractor()
-google_scraper = GoogleScraper()
-uscensus_extractor = USCensus()
+
+extractors = {
+    "CARB": CARBExtractor(),
+    "EPAFlight": EPAExtractor(),
+    "EPAHub": EPAHubExtractor(),
+    "EMFAC": EMFACExtractor(),
+    "GoogleEIE": GoogleScraper(),
+    "USCensus": USCensus(),
+}
 
 
 # Add a title to your app
-st.title("Data Extraction App")
+st.title("Long Beach Climate Inventory Data Extraction App")
+st.sidebar.image("longbeach_logo.png")
+
+extractor_choice = st.selectbox(
+    "Select a data source to fetch data", list(extractors.keys())
+)
+
+# Add a selector for the user to choose a year in the sidebar
+year = st.sidebar.selectbox(
+    "Select a year", range(2015, 2023)
+)  # Modify the range as needed
 
 # Add a selector for the user to choose an extractor
 extractor_choice = st.selectbox(
@@ -28,20 +41,29 @@ extractor_choice = st.selectbox(
     ("CARB", "EPAFlight", "EPAHub", "EMFAC", "GoogleEIE", "USCensus"),
 )
 
-# When the user presses the 'Run' button, run the appropriate extractor
+# If GoogleEIE is selected, ask the user to choose between transportation and buildings
+google_choice = None
+if extractor_choice == "GoogleEIE":
+    google_choice = st.selectbox("Choose a type", ("Transportation", "Buildings"))
+
+
+emfac_choice = None
+if extractor_choice == "EMFAC":
+    emfac_choice = st.selectbox("Choose a type of emissions", ("Onroad", "Offroad"))
+
+
+# When the user presses the 'Run' button, run the appropriate extractor with the chosen year
 if st.button("Run"):
-    if extractor_choice == "CARB":
-        data = carb_extractor.run()  # Assuming each extractor has a run() method
-    elif extractor_choice == "EPAFlight":
-        data = epa_extractor.get_facilities()
-    elif extractor_choice == "EPAHub":
-        data = epa_hub_extractor.get_emission_factors_df()
-    elif extractor_choice == "EMFAC":
-        data = emfac_extractor.get_onroad_data()
-    elif extractor_choice == "GoogleEIE":
-        data = google_scraper.get_transportation_df()
-    elif extractor_choice == "USCensus":
-        data = uscensus_extractor.extract_data()
+    extractor = extractors[extractor_choice]
+
+    if extractor_choice == "GoogleEIE":
+        data = extractor.run(
+            year, google_choice
+        )  # Assuming the run() method takes a type as second argument
+    else:
+        data = extractor.run(
+            year
+        )  # Assuming each extractor has a run() method that takes a year as argument
 
     # Display the data
     st.write(data)

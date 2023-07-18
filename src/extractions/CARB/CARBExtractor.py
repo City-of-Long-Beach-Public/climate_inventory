@@ -127,3 +127,8 @@ class CARBExtractor:
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
         self.longbeach_df = mega_df
+
+    def run(self, year=None):
+        self.get_longbeach_data(year)
+
+        return self.longbeach_df
