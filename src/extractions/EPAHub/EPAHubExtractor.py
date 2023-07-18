@@ -117,5 +117,10 @@ class EPAHubExtractor:
         self.emissions_df = ghg_data
 
     def run(self, year):
-        self.get_emission_factors_df(year)
+        try:
+            self.get_emission_factors_df(year)
+        except Exception as e:
+            print(e)
+            print("Error getting data from EPA Hub")
+            return None
         return self.emissions_df

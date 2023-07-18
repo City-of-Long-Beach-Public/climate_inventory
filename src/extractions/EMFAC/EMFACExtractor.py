@@ -109,3 +109,15 @@ class EMFACExtractor:
         df = pd.DataFrame(content["output"])
 
         return df
+
+    def run(self, year, choice):
+        """
+        Runs scraper for EMFAC data, getting the info
+        from the given year and choice (Onroad or Offroad)
+        """
+        if choice == "Onroad":
+            df = self.get_onroad_data(year)
+        else:
+            df = self.get_offroad_data(year)
+
+        return df

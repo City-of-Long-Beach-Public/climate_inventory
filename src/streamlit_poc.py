@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+from datetime import datetime
 
 # Local Imports
 from extractions.CARB.CARBExtractor import CARBExtractor
@@ -21,6 +22,8 @@ extractors = {
     "USCensus": USCensus(),
 }
 
+# Get the current year
+current_year = datetime.now().year
 
 # Add a title to your app
 st.title("Long Beach Climate Inventory Data Extraction App")
@@ -32,7 +35,7 @@ extractor_choice = st.selectbox(
 
 # Add a selector for the user to choose a year in the sidebar
 year = st.sidebar.selectbox(
-    "Select a year", range(2015, 2023)
+    "Select a year", range(2015, current_year + 1)
 )  # Modify the range as needed
 
 # Add a selector for the user to choose an extractor
