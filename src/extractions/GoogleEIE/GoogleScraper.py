@@ -121,6 +121,8 @@ class GoogleScraper:
                     if transport_dict["factor 1"]:
                         transport_dict["full co2e tons"] = (row[4] * row[3]) / row[2]
                     else:
+                        transport_dict["factor 1"] = 0
+                        transport_dict["factor 2"] = 0
                         transport_dict["full co2e tons"] = 0
                     transport_dicts.append(transport_dict)
                 trip_type_df = pd.DataFrame.from_dict(transport_dicts)
