@@ -45,7 +45,7 @@ class GoogleScraper:
 
     def get_buildings_data(self):
         """
-        Gets buildings data from response
+        Gets buildings data from the raw response
         and parses it into a dataframe
         """
 
@@ -79,6 +79,7 @@ class GoogleScraper:
             buildings_dict_list.append(buildings_dict)
 
         self.buildings_df = pd.DataFrame.from_dict(buildings_dict_list)
+        print("Buildings data extracted")
 
     @staticmethod
     def get_gpc_metrics(df):
@@ -100,6 +101,7 @@ class GoogleScraper:
             df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "full co2e tons"] / 2
         )
 
+        print("GPC metrics calculated")
         return df
 
     @staticmethod
@@ -126,6 +128,7 @@ class GoogleScraper:
             / summed_data.loc[:, "factor 1"]
         )
 
+        print("Aggregated data calculated")
         return summed_data
 
     def get_transportation_df(self):
@@ -162,6 +165,8 @@ class GoogleScraper:
                 counter += 1
 
                 dfs.append(trip_type_df)
+
+        print("Transportation raw data extracted")
         self.transportation_df = pd.concat(dfs, ignore_index=True)
         # Replace the travel bound column with the actual travel bound
         self.transportation_df.loc[:, "travel bound"] = self.transportation_df.loc[
