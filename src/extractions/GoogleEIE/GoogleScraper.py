@@ -26,6 +26,16 @@ class GoogleScraper:
             "X-Client-Data": "CJK2yQEIo7bJAQipncoBCIuEywEIlKHLAQiFoM0B",
         }
 
+        # Mapping params
+        self.trip_types_dict = {0: "INBOUND", 1: "OUTBOUND", 2: "IN-BOUNDARY"}
+        self.mode_dict = {
+            1: "AUTOMOBILE",
+            5: "TRAM",
+            7: "BUS",
+            9: "CYCLING",
+            10: "ON FOOT",
+        }
+
     def initial_request(self):
         """
         Initial call to Google API to get the data
@@ -69,3 +79,63 @@ class GoogleScraper:
             buildings_dict_list.append(buildings_dict)
 
         self.buildings_df = pd.DataFrame.from_dict(buildings_dict_list)
+
+    @staticmethod
+    def get_gpc_metrics(df):
+        # If travel bound is in-boundary, then the gpc distance is the same as the full distance
+        # otherwise, it is half of the full distance
+        df.loc[:, "gpc distance km"] = df.loc[:, "full distance km"]
+        df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "gpc distance km"] = (
+            df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "full distance km"] / 2
+        )
+
+        df.loc[:, "gpc co2e tons"] = df.loc[:, "full co2e tons"]
+        df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "gpc co2e tons"] = (
+            df.loc[df.loc[:, "travel bound"] != "IN-BOUNDARY", "full co2e tons"] / 2
+        )
+
+        return df
+
+    def get_transportation_df(self):
+        """
+        Gets the transortation emissions from the raw response
+        """
+        dfs = []
+        transportation_raw = self.content[11]
+
+        for year_data in transportation_raw:
+            year = year_data[9]
+            trip_type_data = year_data[19]
+            counter = 0
+            for trip_type_sub in trip_type_data:
+                transport_dicts = []
+                data_list = trip_type_sub[3]
+                for row in data_list:
+                    transport_dict = {}
+                    transport_dict["mode"] = row[0]
+                    transport_dict["travel bound"] = counter
+                    transport_dict["trips"] = row[1]
+                    transport_dict["full distance km"] = row[4]
+                    transport_dict["factor 1"] = row[2]
+                    transport_dict["factor 2"] = row[3]
+                    if transport_dict["factor 1"]:
+                        transport_dict["full co2e tons"] = (row[4] * row[3]) / row[2]
+                    else:
+                        transport_dict["full co2e tons"] = 0
+                    transport_dicts.append(transport_dict)
+                trip_type_df = pd.DataFrame.from_dict(transport_dicts)
+                trip_type_df.loc[:, "year"] = year
+                counter += 1
+
+                dfs.append(trip_type_df)
+        self.transportation_df = pd.concat(dfs, ignore_index=True)
+        # Replace the travel bound column with the actual travel bound
+        self.transportation_df.loc[:, "travel bound"] = self.transportation_df.loc[
+            :, "travel bound"
+        ].map(self.trip_types_dict)
+        self.transportation_df.loc[:, "mode"] = self.transportation_df.loc[
+            :, "mode"
+        ].map(self.mode_dict)
+
+        # Get GPC metrics
+        self.transportation_df = self.get_gpc_metrics(self.transportation_df)
