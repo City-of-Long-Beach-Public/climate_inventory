@@ -58,6 +58,9 @@ if st.button("Run"):
         data = extractor.run(year)
 
     # Display the data - parse float columns as needed
-    data = data.astype({col: "float64" for col in data.select_dtypes("int64").columns})
-    data = data.applymap(lambda x: int(x) if isinstance(x, np.int64) else x)
-    st.write(data)
+    # data = data.applymap(lambda x: float(x) if isinstance(x, (int, np.integer)) else x)
+    if extractor_choice == "CARB":
+        st.dataframe(data)
+        # st.write(data.to_html(), unsafe_allow_html=True)
+    else:
+        st.write(data)
