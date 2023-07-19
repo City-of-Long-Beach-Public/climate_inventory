@@ -133,3 +133,18 @@ class USCensus:
                 f"Error extracting data from US Census API (data may not be available for {self.year_to_query}, {self.type_estimate})"
             )
             print(e)
+
+    def run(self, year_to_query, type_estimate):
+        """Calls census API and returns parsed data"""
+
+        self.year_to_query = year_to_query
+        self.type_estimate = type_estimate
+        self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT{self.type_estimate}{self.year_to_query}.B25040&g=160XX00US0643000"
+        self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT{self.type_estimate}{self.year_to_query}.B25040&g=160XX00US0643000"
+        try:
+            self.extract_data()
+        except Exception as e:
+            print(e)
+            self.parsed_data = pd.DataFrame()
+
+        return self.parsed_data

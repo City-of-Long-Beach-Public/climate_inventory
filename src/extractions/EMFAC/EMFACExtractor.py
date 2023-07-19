@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime
 
 # Local imports
-from emfac_payloads import onroad_payload, offroad_payload
+from extractions.EMFAC.emfac_payloads import onroad_payload, offroad_payload
 
 # Global variables
 
@@ -107,5 +107,17 @@ class EMFACExtractor:
         )
         content = response.json()
         df = pd.DataFrame(content["output"])
+
+        return df
+
+    def run(self, year, choice):
+        """
+        Runs scraper for EMFAC data, getting the info
+        from the given year and choice (Onroad or Offroad)
+        """
+        if choice == "Onroad":
+            df = self.get_onroad_data(year)
+        else:
+            df = self.get_offroad_data(year)
 
         return df

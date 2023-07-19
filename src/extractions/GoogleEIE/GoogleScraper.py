@@ -186,3 +186,13 @@ class GoogleScraper:
         self.transportation_df = pd.concat(
             [self.transportation_df, summed_data], ignore_index=True
         )
+
+    def run(self, year, option):
+        """Runs scraper and returns the data"""
+        if option == "Buildings":
+            self.get_buildings_data()
+            return self.buildings_df
+
+        else:
+            self.get_transportation_df()
+            return self.transportation_df

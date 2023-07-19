@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from epa_payloads import payload_facilities
+from extractions.EPAFlight.epa_payloads import payload_facilities
 
 
 class EPAExtractor:
@@ -51,4 +51,13 @@ class EPAExtractor:
             print("Data not found")
             df_facilities = pd.DataFrame([])
 
+        return df_facilities
+
+    def run(self, year=2021):
+        """Runs scraper for the given year"""
+        try:
+            df_facilities = self.get_facilities(year_to_query=year)
+        except Exception:
+            print("Data not found")
+            df_facilities = pd.DataFrame([])
         return df_facilities

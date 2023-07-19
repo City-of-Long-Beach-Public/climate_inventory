@@ -127,3 +127,21 @@ class CARBExtractor:
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
         self.longbeach_df = mega_df
+
+    def run(self, year, option):
+        """
+        Runs scraper for CARB data for a given year
+        """
+        if option == "Emissions":
+            try:
+                self.get_longbeach_data(year)
+                data = self.longbeach_df
+            except Exception as e:
+                print(e)
+                print(f"Could not get data for {year}")
+                data = pd.DataFrame([])
+        else:
+            self.get_urls_df()
+            data = self.urls_df
+
+        return data
