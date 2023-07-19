@@ -10,16 +10,17 @@ from extractions.EMFAC.EMFACExtractor import EMFACExtractor
 from extractions.GoogleEIE.GoogleScraper import GoogleScraper
 from extractions.USCensus.USCensus import USCensus
 
-
 # Initialize Extractors
-
 extractors = {
-    "CARB": CARBExtractor(),
-    "EPAFlight": EPAExtractor(),
-    "EPAHub": EPAHubExtractor(),
-    "EMFAC": EMFACExtractor(),
-    "GoogleEIE": GoogleScraper(),
-    "USCensus": USCensus(),
+    "CARB": {"object": CARBExtractor(), "options": ["Emissions", "URLs"]},
+    "EPAFlight": {"object": EPAExtractor(), "options": []},
+    "EPAHub": {"object": EPAHubExtractor(), "options": ["Emissions", "URLs"]},
+    "EMFAC": {"object": EMFACExtractor(), "options": ["Onroad", "Offroad"]},
+    "GoogleEIE": {
+        "object": GoogleScraper(),
+        "options": ["Transportation", "Buildings"],
+    },
+    "USCensus": {"object": USCensus(), "options": ["1Y", "5Y"]},
 }
 
 # Get the current year
@@ -29,6 +30,7 @@ current_year = datetime.now().year
 st.title("Long Beach Climate Inventory Data Extraction App")
 st.sidebar.image("longbeach_logo.png")
 
+# Add a selector for the user to choose an extractor
 extractor_choice = st.selectbox(
     "Select a data source to fetch data", list(extractors.keys())
 )
@@ -38,35 +40,21 @@ year = st.sidebar.selectbox(
     "Select a year", range(2015, current_year + 1)
 )  # Modify the range as needed
 
-# Add a selector for the user to choose an extractor
-extractor_choice = st.selectbox(
-    "Select an extractor",
-    ("CARB", "EPAFlight", "EPAHub", "EMFAC", "GoogleEIE", "USCensus"),
-)
+option_choice = None
+# If there are options for the selected extractor, let the user choose an option
+if extractors[extractor_choice]["options"]:
+    option_choice = st.selectbox(
+        "Choose a type", extractors[extractor_choice]["options"]
+    )
 
-# If GoogleEIE is selected, ask the user to choose between transportation and buildings
-google_choice = None
-if extractor_choice == "GoogleEIE":
-    google_choice = st.selectbox("Choose a type", ("Transportation", "Buildings"))
-
-
-emfac_choice = None
-if extractor_choice == "EMFAC":
-    emfac_choice = st.selectbox("Choose a type of emissions", ("Onroad", "Offroad"))
-
-
-# When the user presses the 'Run' button, run the appropriate extractor with the chosen year
+# When the user presses the 'Run' button, run the appropriate extractor with the chosen year and option
 if st.button("Run"):
-    extractor = extractors[extractor_choice]
+    extractor = extractors[extractor_choice]["object"]
 
-    if extractor_choice == "GoogleEIE":
-        data = extractor.run(
-            year, google_choice
-        )  # Assuming the run() method takes a type as second argument
+    if option_choice:
+        data = extractor.run(year, option_choice)
     else:
-        data = extractor.run(
-            year
-        )  # Assuming each extractor has a run() method that takes a year as argument
+        data = extractor.run(year)
 
     # Display the data
     st.write(data)
