@@ -134,7 +134,7 @@ class USCensus:
             )
             print(e)
 
-    def run(self, year_to_query=2021, type_estimate="1Y"):
+    def run(self, year_to_query, type_estimate):
         """Calls census API and returns parsed data"""
 
         self.year_to_query = year_to_query

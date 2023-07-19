@@ -28,7 +28,7 @@ current_year = datetime.now().year
 
 # Add a title to your app
 st.title("Long Beach Climate Inventory Data Extraction App")
-st.sidebar.image("longbeach_logo.png")
+st.sidebar.image("climate_inventory\src\longbeach_logo.png")
 
 # Add a selector for the user to choose an extractor
 extractor_choice = st.selectbox(
@@ -57,4 +57,5 @@ if st.button("Run"):
         data = extractor.run(year)
 
     # Display the data
+    data = data.astype(float)
     st.write(data)
