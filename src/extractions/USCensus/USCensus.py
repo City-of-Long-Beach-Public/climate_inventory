@@ -143,8 +143,9 @@ class USCensus:
         self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT{self.type_estimate}{self.year_to_query}.B25040&g=160XX00US0643000"
         try:
             self.extract_data()
+            data = self.parsed_data
         except Exception as e:
             print(e)
-            self.parsed_data = pd.DataFrame()
+            data = pd.DataFrame()
 
-        return self.parsed_data
+        return data
