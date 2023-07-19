@@ -56,6 +56,8 @@ if st.button("Run"):
     else:
         data = extractor.run(year)
 
-    # Display the data
-    data = data.astype(float)
+    # Display the data - parse float columns as needed
+    for col in data.columns:
+        if data[col].dtype == "int64":
+            data[col] = data[col].astype("float64")
     st.write(data)
