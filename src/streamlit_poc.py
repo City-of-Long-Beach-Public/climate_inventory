@@ -67,12 +67,11 @@ if st.button("Run"):
     # Display the data - parse float columns as needed
     # data = data.applymap(lambda x: float(x) if isinstance(x, (int, np.integer)) else x)
     if extractor_choice == "CARB":
-        st.dataframe(data)
-        # st.write(data.to_html(), unsafe_allow_html=True)
+        st.write(data.to_html(), unsafe_allow_html=True)
     else:
         st.write(data)
 
-    if data:
+    if not data.empty:
         csv = convert_df(data)
         st.download_button(
             "Download csv file",
