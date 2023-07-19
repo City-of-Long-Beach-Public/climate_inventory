@@ -27,7 +27,14 @@ extractors = {
 # Get the current year
 current_year = datetime.now().year
 
-# Add a title to your app
+
+# Saving csv in cache
+@st.cache
+def convert_df(df):
+    return df.to_csv(index=False).encode("utf-8-sig")
+
+
+# App layout
 st.title("Long Beach Climate Inventory Data Extraction App")
 st.sidebar.image("climate_inventory\src\longbeach_logo.png")
 
@@ -64,3 +71,13 @@ if st.button("Run"):
         # st.write(data.to_html(), unsafe_allow_html=True)
     else:
         st.write(data)
+
+    if data:
+        csv = convert_df(data)
+        st.download_button(
+            "Download csv file",
+            csv,
+            f"results_{extractor_choice}.csv",
+            "text/csv",
+            key="download-csv",
+        )
