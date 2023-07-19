@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
 from datetime import datetime
@@ -57,7 +58,6 @@ if st.button("Run"):
         data = extractor.run(year)
 
     # Display the data - parse float columns as needed
-    for col in data.columns:
-        if data[col].dtype == "int64":
-            data[col] = data[col].astype("float64")
+    data = data.astype({col: "float64" for col in data.select_dtypes("int64").columns})
+    data = data.applymap(lambda x: int(x) if isinstance(x, np.int64) else x)
     st.write(data)
