@@ -31,14 +31,25 @@ There is also the option to only get the dataframe with the corresponding urls s
 
 **Google - Environmental Insights Explorer (GoogleEIE)**
 
-This scraper gets the data from the [Google EIE Website](https://insights.sustainability.google/). This website contains the emissions per sector for the selected city. The scraper is done by calling their API and using the adequate payload (which includes the city and the year selected). By default, we select the Long Beach city, and the year is up to the user.
+This scraper gets the Long Beach data from the [Google EIE Website](https://insights.sustainability.google/places/ChIJWdeZQOjKwoARqo8qxPo6AKE/download?hl=en-US). This website contains the emissions per sector for Long Beach. The scraper is done by calling their API.
+
+This was the hardest scraper since the API results are very inconsistent, and they do not have all of the information. For example, the CO2 emissions for the transportation vehicles were not available from the API response, but two 'factors' were available in the response. The code then calculates the CO2 emissions by using those two factors and the total distance.
 
 **US Census (USCensus)**
 
+This scraper gets the Long Beach house heating fuel consumption from the [US Census Website](https://data.census.gov/table?q=B25040&g=160XX00US0643000&tid=ACSDT1Y2021.B25040).
+
+The US Census API is queried to get the table from this data. The user has the option to choose the year and the type of estimations (5-year or 1-year).
 
 ## Future Work
 
+Some future work that could be done include:
 
+- Adding more scrapers to get more data
+- Adding a functionality to the streamlit app to merge as much data as possible into a single dataframe
+- Adding a functionality to the streamlit app to upload the data either to a database or a sharepoint folder.
 
 Contact Information:
+
+- Federico Dominguez, fd.molina@outlook.com
 
