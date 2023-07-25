@@ -7,11 +7,26 @@ This repository contains several scrapers that pull relevant data for the Green 
 The scrapers are located in the `src/extrations` folder. There, there are several scrapers that pull data from different sources. The scrapers are:
 
 **California Air Resources Board (CARB)** 
+
+
 **EMFAC** 
+
+
 **Environmental Protection Agency - FLIGHT App (EPAFlight)**
+
+
 **Environmental Protection Agency - Hub**
+
+
 **Google - Environmental Insights Explorer (GoogleEIE)**
+
+
 **US Census (USCensus)**
 
 
+## Future Work
+
+
+
+Contact Information:
 
