@@ -31,6 +31,7 @@ There is also the option to only get the dataframe with the corresponding urls s
 
 **Google - Environmental Insights Explorer (GoogleEIE)**
 
+This scraper gets the data from the [Google EIE Website](https://insights.sustainability.google/). This website contains the emissions per sector for the selected city. The scraper is done by calling their API and using the adequate payload (which includes the city and the year selected). By default, we select the Long Beach city, and the year is up to the user.
 
 **US Census (USCensus)**
 
