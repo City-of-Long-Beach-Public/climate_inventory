@@ -118,7 +118,8 @@ class EPAHubExtractor:
         cols = ghg_data.columns.tolist()
         new_cols = [str(col).replace("Unnamed:", "Column") for col in cols]
         ghg_data.columns = new_cols
-
+        # Adding year column
+        ghg_data.loc[:, "year"] = year
         self.emissions_df = ghg_data
 
     def get_all_yearly_emissions_factors(self):
@@ -132,7 +133,6 @@ class EPAHubExtractor:
                 print(f"Getting data for year {year}...")
                 self.get_emission_factors_df(year)
                 yearly_data = self.emissions_df
-                yearly_data["year"] = year
             except Exception as err:
                 print(err)
                 print(f"Error getting data for year {year}")
