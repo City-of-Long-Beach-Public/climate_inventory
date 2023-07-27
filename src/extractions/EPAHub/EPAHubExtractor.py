@@ -4,6 +4,7 @@ from io import BytesIO
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 
 class EPAHubExtractor:
@@ -32,6 +33,10 @@ class EPAHubExtractor:
 
         self.undesired_words = ["pdf"]
         self.NA_THRESH = 2
+
+        # Years list
+        current_year = datetime.now().year
+        self.years_list = list(range(2015, current_year + 1))
 
         # Get urls dataframe
         print("Getting urls dataframe...")
@@ -116,11 +121,35 @@ class EPAHubExtractor:
 
         self.emissions_df = ghg_data
 
+    def get_all_yearly_emissions_factors(self):
+        """
+        Gets all yearly emissions factors
+        """
+        print("Getting all yearly emissions factors...")
+        all_data = pd.DataFrame()
+        for year in self.years_list:
+            try:
+                print(f"Getting data for year {year}...")
+                self.get_emission_factors_df(year)
+                yearly_data = self.emissions_df
+                yearly_data["year"] = year
+            except Exception as err:
+                print(err)
+                print(f"Error getting data for year {year}")
+
+            all_data = pd.concat([all_data, yearly_data], ignore_index=True)
+
+        self.all_yearly_data = all_data
+
     def run(self, year, option):
         try:
             if option == "Emissions":
-                self.get_emission_factors_df(year)
-                data = self.emissions_df
+                if year == "All":
+                    self.get_all_yearly_emissions_factors()
+                    data = self.all_yearly_data
+                else:
+                    self.get_emission_factors_df(year)
+                    data = self.emissions_df
             else:
                 self.get_urls_df()
                 data = self.urls_df
