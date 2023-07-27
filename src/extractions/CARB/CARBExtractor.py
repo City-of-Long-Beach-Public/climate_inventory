@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 from io import BytesIO
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 URL = "https://ww2.arb.ca.gov/mrr-data"
 
@@ -13,7 +14,7 @@ headers = {
     "Method": "GET",
     "Path": "/mrr-data",
     "Scheme": "https",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",  # noqa: E501
     "Accept-Encoding": "gzip, deflate, br",
     "Accept-Language": "en-US,en;q=0.9",
     "Cache-Control": "max-age=0",
@@ -26,7 +27,7 @@ headers = {
     "Sec-Fetch-Site": "cross-site",
     "Sec-Fetch-User": "?1",
     "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",  # noqa: E501
 }
 
 
@@ -39,6 +40,10 @@ class CARBExtractor:
         self.NA_THRESH = 10
         # Getting urls and names
         self.get_urls_df()
+
+        # Current year
+        self.current_year = datetime.now().year
+        self.years_list = list(range(2015, self.current_year + 1))
 
     def get_urls_df(self):
         """
@@ -128,18 +133,37 @@ class CARBExtractor:
 
         self.longbeach_df = mega_df
 
+    def get_all_yearly_data(self):
+        """Gets all the yearly data from EPAHub"""
+        all_yearly_data = pd.DataFrame([])
+        for year in self.years_list:
+            try:
+                print(f"Getting data for year {year}...")
+                self.get_longbeach_data(year)
+                all_yearly_data = pd.concat(
+                    [all_yearly_data, self.longbeach_df], ignore_index=True
+                )
+            except Exception as err:
+                print(err)
+                print(f"Data not found for year {year}")
+
+        return all_yearly_data
+
     def run(self, year, option):
         """
         Runs scraper for CARB data for a given year
         """
         if option == "Emissions":
-            try:
-                self.get_longbeach_data(year)
-                data = self.longbeach_df
-            except Exception as e:
-                print(e)
-                print(f"Could not get data for {year}")
-                data = pd.DataFrame([])
+            if year == "All years":
+                data = self.get_all_yearly_data()
+            else:
+                try:
+                    self.get_longbeach_data(year)
+                    data = self.longbeach_df
+                except Exception as e:
+                    print(e)
+                    print(f"Could not get data for {year}")
+                    data = pd.DataFrame([])
         else:
             self.get_urls_df()
             data = self.urls_df
