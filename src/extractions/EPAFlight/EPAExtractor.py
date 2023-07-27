@@ -75,6 +75,8 @@ class EPAExtractor:
                 [all_yearly_data, df_facilities], ignore_index=True
             )
 
+        return all_yearly_data
+
     def run(self, year):
         """Runs scraper for the given year or all years"""
 
