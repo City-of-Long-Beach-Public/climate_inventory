@@ -120,4 +120,8 @@ class EMFACExtractor:
         else:
             df = self.get_offroad_data(year)
 
+        if year != "All years":
+            print(f"Getting data for {year}...")
+            df = df.loc[df.loc[:, "calendarYear"] == year, :]
+
         return df
