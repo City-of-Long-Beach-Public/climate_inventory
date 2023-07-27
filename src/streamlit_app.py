@@ -24,6 +24,9 @@ extractors = {
 
 # Get the current year
 current_year = datetime.now().year
+years_list = list(range(2015, current_year + 1))
+# Add the  'all' option
+years_list.insert(0, "All years")
 
 
 # Saving csv in cache
