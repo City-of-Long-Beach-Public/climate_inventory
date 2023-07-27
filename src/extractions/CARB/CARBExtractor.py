@@ -131,6 +131,7 @@ class CARBExtractor:
 
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
+        mega_df.loc[:, "ARB ID"] = mega_df.loc[:, "ARB ID"].astype("float64")
         self.longbeach_df = mega_df
 
     def get_all_yearly_data(self):
