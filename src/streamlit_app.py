@@ -45,9 +45,7 @@ extractor_choice = st.selectbox(
 )
 
 # Add a selector for the user to choose a year in the sidebar
-year = st.sidebar.selectbox(
-    "Select a year", range(2015, current_year + 1)
-)  # Modify the range as needed
+year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
 
 option_choice = None
 # If there are options for the selected extractor, let the user choose an option
