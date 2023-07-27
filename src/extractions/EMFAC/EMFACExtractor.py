@@ -122,6 +122,6 @@ class EMFACExtractor:
 
         if year != "All years":
             print(f"Getting data for {year}...")
-            df = df.loc[df.loc[:, "calendarYear"] == year, :]
+            df = df.loc[df.loc[:, "Calendar Year"] == str(year), :]
 
         return df
