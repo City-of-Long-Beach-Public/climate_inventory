@@ -1,5 +1,9 @@
+import time
 import requests
 import pandas as pd
+from datetime import datetime
+
+# Local imports
 from extractions.EPAFlight.epa_payloads import payload_facilities
 
 
@@ -23,6 +27,8 @@ class EPAExtractor:
             "X-Requested-With": "XMLHttpRequest",
         }
         self.payload_facilities = payload_facilities
+        self.current_year = datetime.now().year
+        self.years_list = list(range(2015, self.current_year + 1))
 
     def get_facilities(self, year_to_query=2021):
         """
@@ -53,11 +59,28 @@ class EPAExtractor:
 
         return df_facilities
 
-    def run(self, year=2021):
-        """Runs scraper for the given year"""
-        try:
-            df_facilities = self.get_facilities(year_to_query=year)
-        except Exception:
-            print("Data not found")
-            df_facilities = pd.DataFrame([])
-        return df_facilities
+    def get_all_yearly_facilities(self):
+        """Gets all of the yearly facilities data and returns a dataframe"""
+        all_yearly_data = pd.DataFrame([])
+        for year in self.years_list:
+            try:
+                print(f"Getting data for year {year}...")
+                df_facilities = self.get_facilities(year_to_query=year)
+                time.sleep(0.25)
+            except Exception as err:
+                print(err)
+                print(f"Data not found for year {year}")
+                df_facilities = pd.DataFrame([])
+            all_yearly_data = pd.concat(
+                [all_yearly_data, df_facilities], ignore_index=True
+            )
+
+    def run(self, year):
+        """Runs scraper for the given year or all years"""
+
+        if year == "All years":
+            data = self.get_all_yearly_facilities()
+        else:
+            data = self.get_facilities(year_to_query=year)
+
+        return data
