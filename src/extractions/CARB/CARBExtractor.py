@@ -3,6 +3,7 @@
 
 import requests
 import pandas as pd
+import numpy as np
 from io import BytesIO
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -74,6 +75,21 @@ class CARBExtractor:
 
         self.urls_df = df
 
+    @staticmethod
+    def convert_cols_to_float(mega_df):
+        """Numeric cols are converted to float"""
+        mega_df = mega_df.convert_dtypes()
+
+        # Downcast Int64 and Int32 to int32
+        for col in mega_df.select_dtypes(include=["Int64", "Int32"]).columns:
+            mega_df[col] = mega_df[col].astype("int32")
+
+        # Downcast float64 to float32
+        for col in mega_df.select_dtypes(include="Float64").columns:
+            mega_df[col] = mega_df[col].astype("float64")
+
+        return mega_df
+
     def get_longbeach_data(self, year=None):
         """
         Gets dataframe with all of the urls with GHG data for
@@ -131,7 +147,7 @@ class CARBExtractor:
 
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
-        mega_df.loc[:, "ARB ID"] = mega_df.loc[:, "ARB ID"].astype("float64")
+        mega_df = self.convert_cols_to_float(mega_df)
         self.longbeach_df = mega_df
 
     def get_all_yearly_data(self):

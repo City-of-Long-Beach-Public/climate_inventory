@@ -66,8 +66,9 @@ if st.button("Run"):
     # Display the data - parse float columns as needed
     # data = data.applymap(lambda x: float(x) if isinstance(x, (int, np.integer)) else x)
     if extractor_choice == "CARB":
-        # st.write(data.to_html(), unsafe_allow_html=True)
-        st.write(data)
+        st.write(data.to_html(), unsafe_allow_html=True)
+        # st.table(data)
+
     else:
         st.write(data)
 
