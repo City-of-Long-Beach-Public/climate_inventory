@@ -63,14 +63,13 @@ if st.button("Run"):
     else:
         data = extractor.run(year)
 
-    # Display the data - parse float columns as needed
-    # data = data.applymap(lambda x: float(x) if isinstance(x, (int, np.integer)) else x)
-    if extractor_choice == "CARB":
-        st.write(data.to_html(), unsafe_allow_html=True)
-        # st.table(data)
-
-    else:
+    # Display the data
+    try:
         st.write(data)
+
+    except Exception as err:
+        print(err)
+        st.write(data.to_html(), unsafe_allow_html=True)
 
     if not data.empty:
         csv = convert_df(data)
@@ -84,6 +83,6 @@ if st.button("Run"):
 
     else:
         st.markdown(
-            "<h3 style='text-align: center; color: black;'>No data found for the specified criteria</h3>",  # noqa: E501
+            "<h4 style='text-align: center; color: black;'>No data found for the specified criteria</h4>",  # noqa: E501
             unsafe_allow_html=True,
         )
