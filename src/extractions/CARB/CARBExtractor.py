@@ -3,7 +3,6 @@
 
 import requests
 import pandas as pd
-import numpy as np
 from io import BytesIO
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -177,7 +176,5 @@ class CARBExtractor:
         else:
             self.get_urls_df()
             data = self.urls_df
-
-        data = data.astype(str)
 
         return data
