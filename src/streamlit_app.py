@@ -84,6 +84,6 @@ if st.button("Run"):
 
     else:
         st.markdown(
-            "<h3 style='text-align: center; color: black;'>No data found for the specified criteria</h3>",
+            "<h3 style='text-align: center; color: black;'>No data found for the specified criteria</h3>",  # noqa: E501
             unsafe_allow_html=True,
         )
