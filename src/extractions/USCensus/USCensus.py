@@ -3,6 +3,7 @@
 
 import requests
 import pandas as pd
+from datetime import datetime
 
 
 class USCensus:
@@ -23,16 +24,12 @@ class USCensus:
             "Accept-Encoding": "gzip, deflate, br",
             "Accept-Language": "en-US,en;q=0.9",
             "Cache-Control": "max-age=0",
-            "Sec-Ch-Ua": '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-            "Sec-Ch-Ua-Mobile": "?0",
-            "Sec-Ch-Ua-Platform": '"Windows"',
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-User": "?1",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
         }
+
+        self.current_year = datetime.now().year
+
+        self.years_list = list(range(2015, self.current_year + 1))
 
     def get_metadata_content(self):
         """
@@ -136,14 +133,27 @@ class USCensus:
 
     def run(self, year_to_query, type_estimate):
         """Calls census API and returns parsed data"""
-
-        self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT{type_estimate}{year_to_query}.B25040&g=160XX00US0643000"
-        self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT{type_estimate}{year_to_query}.B25040&g=160XX00US0643000"
-        try:
-            self.extract_data()
-            data = self.parsed_data
-        except Exception as e:
-            print(e)
+        if year_to_query == "All years":
             data = pd.DataFrame()
+            for year in self.years_list:
+                self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT{type_estimate}{year}.B25040&g=160XX00US0643000"
+                self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT{type_estimate}{year}.B25040&g=160XX00US0643000"
+                try:
+                    self.extract_data()
+                    year_data = self.parsed_data
+                except Exception as e:
+                    print(e)
+                    year_data = pd.DataFrame()
+                    pass
+                data = pd.concat([data, year_data], ignore_index=True)
+        else:
+            self.API_METADATA = f"https://data.census.gov/api/search/metadata/table?id=ACSDT{type_estimate}{year_to_query}.B25040&g=160XX00US0643000"
+            self.API_TABLE = f"https://data.census.gov/api/access/data/table?id=ACSDT{type_estimate}{year_to_query}.B25040&g=160XX00US0643000"
+            try:
+                self.extract_data()
+                data = self.parsed_data
+            except Exception as e:
+                print(e)
+                data = pd.DataFrame()
 
         return data

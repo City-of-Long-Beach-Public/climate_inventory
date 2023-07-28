@@ -191,8 +191,16 @@ class GoogleScraper:
         """Runs scraper and returns the data"""
         if option == "Buildings":
             self.get_buildings_data()
-            return self.buildings_df
+            if year == "All years":
+                return self.buildings_df
+            else:
+                return self.buildings_df.loc[self.buildings_df.loc[:, "year"] == year]
 
         else:
             self.get_transportation_df()
-            return self.transportation_df
+            if year == "All years":
+                return self.transportation_df
+            else:
+                return self.transportation_df.loc[
+                    self.transportation_df.loc[:, "year"] == year
+                ]

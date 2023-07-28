@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 import streamlit as st
 from datetime import datetime
 
@@ -26,6 +24,9 @@ extractors = {
 
 # Get the current year
 current_year = datetime.now().year
+years_list = list(range(2015, current_year + 1))
+# Add the  'all' option
+years_list.insert(0, "All years")
 
 
 # Saving csv in cache
@@ -44,9 +45,7 @@ extractor_choice = st.selectbox(
 )
 
 # Add a selector for the user to choose a year in the sidebar
-year = st.sidebar.selectbox(
-    "Select a year", range(2015, current_year + 1)
-)  # Modify the range as needed
+year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
 
 option_choice = None
 # If there are options for the selected extractor, let the user choose an option
@@ -64,12 +63,14 @@ if st.button("Run"):
     else:
         data = extractor.run(year)
 
-    # Display the data - parse float columns as needed
-    # data = data.applymap(lambda x: float(x) if isinstance(x, (int, np.integer)) else x)
-    if extractor_choice == "CARB":
-        st.write(data.to_html(), unsafe_allow_html=True)
-    else:
+    # Display the data
+    try:
+        data = data.astype(str) if "CARB" in extractor_choice else data
         st.write(data)
+
+    except Exception as err:
+        print(err)
+        st.write(data.to_html(), unsafe_allow_html=True)
 
     if not data.empty:
         csv = convert_df(data)
@@ -79,4 +80,10 @@ if st.button("Run"):
             f"results_{extractor_choice}.csv",
             "text/csv",
             key="download-csv",
+        )
+
+    else:
+        st.markdown(
+            "<h4 style='text-align: center; color: black;'>No data found for the specified criteria</h4>",  # noqa: E501
+            unsafe_allow_html=True,
         )

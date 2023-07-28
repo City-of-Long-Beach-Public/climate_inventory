@@ -24,7 +24,7 @@ The webscraped site is the [EPAFlight Website](https://ghgdata.epa.gov/ghgp/main
 
 **Environmental Protection Agency - Hub**
 
-The webscraped site is the [EPAHub Website](https://www.epa.gov/ghgreporting/ghg-reporting-program-data-sets). This website contains the emission factors for several categories, including electricity, vehicles and waste. The scraper is very similar to the CARB one, where the user selects a year, which is associated with an excel file that is downloaded and parsed. 
+The webscraped site is the [EPAHub Website](https://www.epa.gov/climateleadership/ghg-emission-factors-hub) This website contains the emission factors for several categories, including electricity, vehicles and waste. The scraper is very similar to the CARB one, where the user selects a year, which is associated with an excel file that is downloaded and parsed. 
 
 There is also the option to only get the dataframe with the corresponding urls so the user can download the excel file themselves.
 
