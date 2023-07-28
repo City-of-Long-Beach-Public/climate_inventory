@@ -65,6 +65,7 @@ if st.button("Run"):
 
     # Display the data
     try:
+        data = data.astype(str) if "CARB" in extractor_choice else data
         st.write(data)
 
     except Exception as err:
