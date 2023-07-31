@@ -9,24 +9,60 @@ from extractions.EMFAC.EMFACExtractor import EMFACExtractor
 from extractions.GoogleEIE.GoogleScraper import GoogleScraper
 from extractions.USCensus.USCensus import USCensus
 
+# Get current year
+current_year = datetime.now().year
+
+
 # Initialize Extractors
+
 extractors = {
-    "CARB": {"object": CARBExtractor(), "options": ["Emissions", "URLs"]},
-    "EPAFlight": {"object": EPAExtractor(), "options": []},
-    "EPAHub": {"object": EPAHubExtractor(), "options": ["Emissions", "URLs"]},
-    "EMFAC": {"object": EMFACExtractor(), "options": ["Onroad", "Offroad"]},
+    "CARB": {
+        "object": CARBExtractor(),
+        "options": ["Emissions", "URLs"],
+        "years": list(range(2015, current_year + 1)),
+    },
+    "EPAFlight": {
+        "object": EPAExtractor(),
+        "options": [],
+        "years": list(range(2015, current_year + 1)),
+    },
+    "EPAHub": {
+        "object": EPAHubExtractor(),
+        "options": ["Emissions", "URLs"],
+        "years": list(range(2015, 2023)),
+    },
+    "EMFAC": {
+        "object": EMFACExtractor(),
+        "options": ["Onroad", "Offroad"],
+        "years": list(range(2015, 2021)),
+    },
     "GoogleEIE": {
         "object": GoogleScraper(),
         "options": ["Transportation", "Buildings"],
+        "years": list(range(2015, current_year + 1)),
     },
-    "USCensus": {"object": USCensus(), "options": ["1Y", "5Y"]},
+    "USCensus": {
+        "object": USCensus(),
+        "options": ["1Y", "5Y"],
+        "years": list(range(2015, 2023)),
+    },
 }
 
-# Get the current year
-current_year = datetime.now().year
-years_list = list(range(2015, current_year + 1))
+# App layout
+st.title("Long Beach Climate Inventory Data Extraction App")
+st.sidebar.image("climate_inventory\src\longbeach_logo.png")
+
+# Add a selector for the user to choose an extractor
+extractor_choice = st.selectbox(
+    "Select a data source to fetch data", list(extractors.keys())
+)
+
+years_list = extractors[extractor_choice]["years"]
 # Add the  'all' option
 years_list.insert(0, "All years")
+
+# Add a selector for the user to choose a year in the sidebar
+year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
 
 
 # Saving csv in cache
@@ -43,9 +79,6 @@ st.sidebar.image("climate_inventory\src\longbeach_logo.png")
 extractor_choice = st.selectbox(
     "Select a data source to fetch data", list(extractors.keys())
 )
-
-# Add a selector for the user to choose a year in the sidebar
-year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
 
 option_choice = None
 # If there are options for the selected extractor, let the user choose an option
