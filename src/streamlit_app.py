@@ -9,31 +9,54 @@ from extractions.EMFAC.EMFACExtractor import EMFACExtractor
 from extractions.GoogleEIE.GoogleScraper import GoogleScraper
 from extractions.USCensus.USCensus import USCensus
 
-# Initialize Extractors
-extractors = {
-    "CARB": {"object": CARBExtractor(), "options": ["Emissions", "URLs"]},
-    "EPAFlight": {"object": EPAExtractor(), "options": []},
-    "EPAHub": {"object": EPAHubExtractor(), "options": ["Emissions", "URLs"]},
-    "EMFAC": {"object": EMFACExtractor(), "options": ["Onroad", "Offroad"]},
-    "GoogleEIE": {
-        "object": GoogleScraper(),
-        "options": ["Transportation", "Buildings"],
-    },
-    "USCensus": {"object": USCensus(), "options": ["1Y", "5Y"]},
-}
-
-# Get the current year
+# Get current year
 current_year = datetime.now().year
-years_list = list(range(2015, current_year + 1))
-# Add the  'all' option
-years_list.insert(0, "All years")
 
 
-# Saving csv in cache
+# Helper functions - saving csv to cache
 @st.cache_data
 def convert_df(df):
     return df.to_csv(index=False).encode("utf-8-sig")
 
+
+# Constants
+INITIAL_YEAR = 2015
+LAST_AVAILABLE_YEAR = 2021
+
+# Initialize Extractors
+
+extractors = {
+    "CARB": {
+        "object": CARBExtractor(),
+        "options": ["Emissions", "URLs"],
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
+    },
+    "EPAFlight": {
+        "object": EPAExtractor(),
+        "options": [],
+        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR + 1)),
+    },
+    "EPAHub": {
+        "object": EPAHubExtractor(),
+        "options": ["Emissions", "URLs"],
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
+    },
+    "EMFAC": {
+        "object": EMFACExtractor(),
+        "options": ["Onroad", "Offroad"],
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
+    },
+    "GoogleEIE": {
+        "object": GoogleScraper(),
+        "options": ["Transportation", "Buildings"],
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
+    },
+    "USCensus": {
+        "object": USCensus(),
+        "options": ["1Y", "5Y"],
+        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR + 1)),
+    },
+}
 
 # App layout
 st.title("Long Beach Climate Inventory Data Extraction App")
@@ -43,6 +66,10 @@ st.sidebar.image("climate_inventory\src\longbeach_logo.png")
 extractor_choice = st.selectbox(
     "Select a data source to fetch data", list(extractors.keys())
 )
+
+years_list = extractors[extractor_choice]["years"]
+# Add the  'all' option
+years_list.insert(0, "All years")
 
 # Add a selector for the user to choose a year in the sidebar
 year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
