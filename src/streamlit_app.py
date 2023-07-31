@@ -34,12 +34,12 @@ extractors = {
     "EPAFlight": {
         "object": EPAExtractor(),
         "options": [],
-        "years": list(range(INITIAL_YEAR, current_year + 1)),
+        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR + 1)),
     },
     "EPAHub": {
         "object": EPAHubExtractor(),
         "options": ["Emissions", "URLs"],
-        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR)),
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
     },
     "EMFAC": {
         "object": EMFACExtractor(),
@@ -54,7 +54,7 @@ extractors = {
     "USCensus": {
         "object": USCensus(),
         "options": ["1Y", "5Y"],
-        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR)),
+        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR + 1)),
     },
 }
 
