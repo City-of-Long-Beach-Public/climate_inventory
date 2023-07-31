@@ -19,38 +19,42 @@ def convert_df(df):
     return df.to_csv(index=False).encode("utf-8-sig")
 
 
+# Constants
+INITIAL_YEAR = 2015
+LAST_AVAILABLE_YEAR = 2021
+
 # Initialize Extractors
 
 extractors = {
     "CARB": {
         "object": CARBExtractor(),
         "options": ["Emissions", "URLs"],
-        "years": list(range(2015, current_year + 1)),
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
     },
     "EPAFlight": {
         "object": EPAExtractor(),
         "options": [],
-        "years": list(range(2015, current_year + 1)),
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
     },
     "EPAHub": {
         "object": EPAHubExtractor(),
         "options": ["Emissions", "URLs"],
-        "years": list(range(2015, 2023)),
+        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR)),
     },
     "EMFAC": {
         "object": EMFACExtractor(),
         "options": ["Onroad", "Offroad"],
-        "years": list(range(2015, 2021)),
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
     },
     "GoogleEIE": {
         "object": GoogleScraper(),
         "options": ["Transportation", "Buildings"],
-        "years": list(range(2015, current_year + 1)),
+        "years": list(range(INITIAL_YEAR, current_year + 1)),
     },
     "USCensus": {
         "object": USCensus(),
         "options": ["1Y", "5Y"],
-        "years": list(range(2015, 2023)),
+        "years": list(range(INITIAL_YEAR, LAST_AVAILABLE_YEAR)),
     },
 }
 
