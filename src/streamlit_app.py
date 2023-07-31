@@ -13,6 +13,12 @@ from extractions.USCensus.USCensus import USCensus
 current_year = datetime.now().year
 
 
+# Helper functions - saving csv to cache
+@st.cache_data
+def convert_df(df):
+    return df.to_csv(index=False).encode("utf-8-sig")
+
+
 # Initialize Extractors
 
 extractors = {
@@ -63,22 +69,6 @@ years_list.insert(0, "All years")
 
 # Add a selector for the user to choose a year in the sidebar
 year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
-
-
-# Saving csv in cache
-@st.cache_data
-def convert_df(df):
-    return df.to_csv(index=False).encode("utf-8-sig")
-
-
-# App layout
-st.title("Long Beach Climate Inventory Data Extraction App")
-st.sidebar.image("climate_inventory\src\longbeach_logo.png")
-
-# Add a selector for the user to choose an extractor
-extractor_choice = st.selectbox(
-    "Select a data source to fetch data", list(extractors.keys())
-)
 
 option_choice = None
 # If there are options for the selected extractor, let the user choose an option
