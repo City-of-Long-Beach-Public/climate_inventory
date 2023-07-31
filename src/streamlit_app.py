@@ -67,8 +67,8 @@ extractor_choice = st.selectbox(
     "Select a data source to fetch data", list(extractors.keys())
 )
 
+# Add the  'all' option to the years list
 years_list = extractors[extractor_choice]["years"]
-# Add the  'all' option
 years_list.insert(0, "All years")
 
 # Add a selector for the user to choose a year in the sidebar
