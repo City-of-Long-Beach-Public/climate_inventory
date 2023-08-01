@@ -22,6 +22,7 @@ def convert_df(df):
 # Constants
 INITIAL_YEAR = 2015
 LAST_AVAILABLE_YEAR = 2021
+LOGO_URL = "https://www.parklb.com/media/1031/longbeachlogostacked480px72dpi.png"
 
 # Initialize Extractors
 
@@ -60,7 +61,7 @@ extractors = {
 
 # App layout
 st.title("Long Beach Climate Inventory Data Extraction App")
-st.sidebar.image("climate_inventory\src\longbeach_logo.png")
+st.sidebar.image(LOGO_URL)
 
 # Add a selector for the user to choose an extractor
 extractor_choice = st.selectbox(
