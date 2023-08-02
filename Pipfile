@@ -8,6 +8,8 @@ requests = "*"
 pandas = "*"
 streamlit = "*"
 beautifulsoup4 = "*"
+openpyxl = "*"
+xlrd = "*"
 
 [dev-packages]
 
