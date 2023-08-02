@@ -136,11 +136,13 @@ class CARBExtractor:
             longbeach_df = longbeach_df.dropna(axis=1, how="all")
             # Remove \n in column names
             longbeach_df.columns = longbeach_df.columns.str.replace("\n", " ")
-
+            # First column is not needed
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
+        mega_df.reset_index(drop=True, inplace=True)
         mega_df.fillna("Not Available", inplace=True)
-        self.longbeach_df = mega_df
+        # Converting all columns to string
+        self.longbeach_df = mega_df.astype(str)
 
     def get_all_yearly_data(self):
         """Gets all the yearly data from EPAHub"""
