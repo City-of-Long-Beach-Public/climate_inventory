@@ -139,10 +139,9 @@ class CARBExtractor:
             # First column is not needed
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
-        mega_df.reset_index(drop=True, inplace=True)
+        # Index name removal
+        mega_df = mega_df.rename_axis(None, axis=1)
         mega_df.fillna("Not Available", inplace=True)
-        # Remove first column (not needed)
-        mega_df.index.astype(str)
         # Converting all columns to string
         self.longbeach_df = mega_df.astype(str)
 
