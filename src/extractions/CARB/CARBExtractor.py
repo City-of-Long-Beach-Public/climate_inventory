@@ -143,7 +143,7 @@ class CARBExtractor:
         mega_df = mega_df.rename_axis(None, axis=1)
         mega_df.fillna("Not Available", inplace=True)
         # Converting all columns to string
-        self.longbeach_df = mega_df.astype(str)
+        self.longbeach_df = mega_df
 
     def get_all_yearly_data(self):
         """Gets all the yearly data from EPAHub"""
