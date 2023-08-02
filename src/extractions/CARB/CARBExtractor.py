@@ -136,10 +136,13 @@ class CARBExtractor:
             longbeach_df = longbeach_df.dropna(axis=1, how="all")
             # Remove \n in column names
             longbeach_df.columns = longbeach_df.columns.str.replace("\n", " ")
-
+            # First column is not needed
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
-        mega_df = self.convert_cols_to_str(mega_df)
+        # Index name removal
+        mega_df = mega_df.rename_axis(None, axis=1)
+        mega_df.fillna("Not Available", inplace=True)
+        # Converting all columns to string
         self.longbeach_df = mega_df
 
     def get_all_yearly_data(self):

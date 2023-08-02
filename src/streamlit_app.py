@@ -92,9 +92,10 @@ if st.button("Run"):
         data = extractor.run(year)
 
     # Display the data
+    # Remove one column from the dataframe until it can be displayed
     try:
-        data = data.astype(str) if "CARB" in extractor_choice else data
         st.write(data)
+        success = True
 
     except Exception as err:
         print(err)
