@@ -139,7 +139,7 @@ class CARBExtractor:
 
             mega_df = pd.concat([mega_df, longbeach_df], ignore_index=True)
 
-        mega_df = self.convert_cols_to_str(mega_df)
+        mega_df.fillna("Not Available", inplace=True)
         self.longbeach_df = mega_df
 
     def get_all_yearly_data(self):
