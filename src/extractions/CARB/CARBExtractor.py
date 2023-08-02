@@ -141,6 +141,8 @@ class CARBExtractor:
 
         mega_df.reset_index(drop=True, inplace=True)
         mega_df.fillna("Not Available", inplace=True)
+        # Remove first column (not needed)
+        mega_df.index.astype(str)
         # Converting all columns to string
         self.longbeach_df = mega_df.astype(str)
 
