@@ -41,6 +41,40 @@ This scraper gets the Long Beach house heating fuel consumption from the [US Cen
 
 The US Census API is queried to get the table from this data. The user has the option to choose the year and the type of estimations (5-year or 1-year).
 
+
+## How to run this thing?
+
+### Streamlit App
+
+If you want to run the application locally, then you can do the following:
+
+Run the streamlit application from your terminal:
+```bash
+python -m streamlit run streamlit_app.py
+```
+
+Or you can also do it from the pip environment:
+```bash
+python -m pipenv run streamlit run streamlit_app.py
+```
+
+Note that you may need to put the full path to the `streamlit_app.py` file in any of the above commands.
+
+### Scrapers
+
+You can take a look at the `streamlit_app.py` file to see how the scrapers are called. The scrapers are called from the `src/extractions` folder and then ran with the `scraper.run()` method. 
+
+For example, to run the CARB scraper to get the 2019 emissions data, you can do the following:
+
+```python
+# Import scraper
+from extractions.CARB.CARBExtractor import CARBExtractor
+
+# Instantiate scraper and run it
+carb_scraper = CARBExtractor()
+carb_scraper.run(year=2019, {'option': 'Emissions'})
+```
+
 ## Future Work
 
 Some future work that could be done include:
@@ -51,5 +85,5 @@ Some future work that could be done include:
 
 Contact Information:
 
-- Federico Dominguez, fd.molina@outlook.com
+- Federico Dominguez Molina, fd.molina@outlook.com
 
