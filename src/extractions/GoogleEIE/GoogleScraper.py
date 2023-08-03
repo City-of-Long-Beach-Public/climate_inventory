@@ -189,7 +189,7 @@ class GoogleScraper:
 
     def run(self, year, data_type_dict):
         """Runs scraper and returns the data"""
-        option = data_type_dict["type"]
+        option = data_type_dict["option"]
         if option == "Buildings":
             self.get_buildings_data()
             if year == "All years":

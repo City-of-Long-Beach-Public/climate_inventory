@@ -86,7 +86,7 @@ if st.button("Run"):
     extractor = extractors[extractor_choice]["object"]
 
     if data_type:
-        data_type_dict["type"] = data_type
+        data_type_dict["option"] = data_type
         data = extractor.run(
             year,
             data_type_dict,
