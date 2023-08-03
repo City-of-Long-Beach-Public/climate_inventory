@@ -187,8 +187,9 @@ class GoogleScraper:
             [self.transportation_df, summed_data], ignore_index=True
         )
 
-    def run(self, year, option):
+    def run(self, year, data_type_dict):
         """Runs scraper and returns the data"""
+        option = data_type_dict["type"]
         if option == "Buildings":
             self.get_buildings_data()
             if year == "All years":

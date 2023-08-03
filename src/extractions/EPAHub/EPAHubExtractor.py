@@ -141,7 +141,8 @@ class EPAHubExtractor:
 
         self.all_yearly_data = all_data
 
-    def run(self, year, option):
+    def run(self, year, data_type_dict):
+        option = data_type_dict["option"]
         try:
             if option == "Emissions":
                 if year == "All":
