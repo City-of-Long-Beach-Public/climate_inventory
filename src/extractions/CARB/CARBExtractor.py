@@ -161,10 +161,11 @@ class CARBExtractor:
 
         return all_yearly_data
 
-    def run(self, year, option):
+    def run(self, year, data_type_dict):
         """
         Runs scraper for CARB data for a given year
         """
+        option = data_type_dict["option"]
         if option == "Emissions":
             if year == "All years":
                 data = self.get_all_yearly_data()
