@@ -192,10 +192,7 @@ class GoogleScraper:
         option = data_type_dict["option"]
         if option == "Buildings":
             self.get_buildings_data()
-            if year == "All years":
-                return self.buildings_df
-            else:
-                return self.buildings_df.loc[self.buildings_df.loc[:, "year"] == year]
+            return self.buildings_df
 
         else:
             self.get_transportation_df()
