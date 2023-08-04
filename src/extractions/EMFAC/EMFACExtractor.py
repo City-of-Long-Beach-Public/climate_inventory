@@ -3,7 +3,6 @@
 # Standard imports
 import requests
 import pandas as pd
-from datetime import datetime
 
 # Local imports
 from extractions.EMFAC.emfac_payloads import onroad_payload, offroad_payload
@@ -110,12 +109,13 @@ class EMFACExtractor:
 
         return df
 
-    def run(self, year, choice):
+    def run(self, year, data_type_dict):
         """
         Runs scraper for EMFAC data, getting the info
         from the given year and choice (Onroad or Offroad)
         """
-        if choice == "Onroad":
+        option = data_type_dict["option"]
+        if option == "Onroad":
             df = self.get_onroad_data(year)
         else:
             df = self.get_offroad_data(year)

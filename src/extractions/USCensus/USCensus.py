@@ -131,8 +131,10 @@ class USCensus:
             )
             print(e)
 
-    def run(self, year_to_query, type_estimate):
+    def run(self, year_to_query, data_type_dict):
         """Calls census API and returns parsed data"""
+        type_estimate = data_type_dict["option"]
+
         if year_to_query == "All years":
             data = pd.DataFrame()
             for year in self.years_list:

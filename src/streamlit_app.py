@@ -22,7 +22,9 @@ def convert_df(df):
 # Constants
 INITIAL_YEAR = 2015
 LAST_AVAILABLE_YEAR = 2021
+GOOGLE_INITIAL_YEAR = 2018
 LOGO_URL = "https://www.parklb.com/media/1031/longbeachlogostacked480px72dpi.png"
+data_type_dict = {}
 
 # Initialize Extractors
 
@@ -50,7 +52,7 @@ extractors = {
     "GoogleEIE": {
         "object": GoogleScraper(),
         "options": ["Transportation", "Buildings"],
-        "years": list(range(INITIAL_YEAR, current_year + 1)),
+        "years": list(range(GOOGLE_INITIAL_YEAR, current_year + 1)),
     },
     "USCensus": {
         "object": USCensus(),
@@ -75,19 +77,21 @@ years_list.insert(0, "All years")
 # Add a selector for the user to choose a year in the sidebar
 year = st.sidebar.selectbox("Select a year", years_list)  # Modify the range as needed
 
-option_choice = None
+data_type = None
 # If there are options for the selected extractor, let the user choose an option
 if extractors[extractor_choice]["options"]:
-    option_choice = st.selectbox(
-        "Choose a type", extractors[extractor_choice]["options"]
-    )
+    data_type = st.selectbox("Choose a type", extractors[extractor_choice]["options"])
 
 # When the user presses the 'Run' button, run the appropriate extractor with the chosen year and option
 if st.button("Run"):
     extractor = extractors[extractor_choice]["object"]
 
-    if option_choice:
-        data = extractor.run(year, option_choice)
+    if data_type:
+        data_type_dict["option"] = data_type
+        data = extractor.run(
+            year,
+            data_type_dict,
+        )
     else:
         data = extractor.run(year)
 
