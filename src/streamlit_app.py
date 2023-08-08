@@ -83,6 +83,7 @@ if extractors[extractor_choice]["options"]:
     data_type = st.selectbox("Choose a type", extractors[extractor_choice]["options"])
 
 # When the user presses the 'Run' button, run the appropriate extractor with the chosen year and option
+
 if st.button("Run"):
     extractor = extractors[extractor_choice]["object"]
 
