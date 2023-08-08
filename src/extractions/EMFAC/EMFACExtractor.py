@@ -5,7 +5,7 @@ import requests
 import pandas as pd
 
 # Local imports
-from extractions.EMFAC.emfac_payloads import onroad_payload, offroad_payload
+from emfac_payloads import onroad_payload, offroad_payload
 
 # Global variables
 
@@ -115,13 +115,19 @@ class EMFACExtractor:
         from the given year and choice (Onroad or Offroad)
         """
         option = data_type_dict["option"]
-        if option == "Onroad":
-            df = self.get_onroad_data(year)
-        else:
-            df = self.get_offroad_data(year)
 
         if year != "All years":
+            if option == "Onroad":
+                df = self.get_onroad_data(year)
+            else:
+                df = self.get_offroad_data(year)
             print(f"Getting data for {year}...")
             df = df.loc[df.loc[:, "Calendar Year"] == str(year), :]
 
+        else:
+            if option == "Onroad":
+                df = self.get_onroad_data()
+            else:
+                df = self.get_offroad_data()
+            print("Getting data for all years...")
         return df
