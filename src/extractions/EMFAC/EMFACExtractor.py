@@ -5,7 +5,7 @@ import requests
 import pandas as pd
 
 # Local imports
-from emfac_payloads import onroad_payload, offroad_payload
+from extractions.EMFAC.emfac_payloads import onroad_payload, offroad_payload
 
 # Global variables
 
