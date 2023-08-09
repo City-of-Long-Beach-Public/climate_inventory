@@ -111,7 +111,7 @@ if st.button("Run"):
         st.download_button(
             "Download csv file",
             csv,
-            f"results_{extractor_choice}.csv",
+            f"results_{extractor_choice}_{year}.csv",
             "text/csv",
             key="download-csv",
         )
