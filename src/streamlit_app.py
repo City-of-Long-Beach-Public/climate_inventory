@@ -21,7 +21,8 @@ def convert_df(df):
 
 # Constants
 INITIAL_YEAR = 2015
-LAST_AVAILABLE_YEAR = 2021
+# 2021 is the last available year for several sources
+LAST_AVAILABLE_YEAR = current_year - 2
 GOOGLE_INITIAL_YEAR = 2018
 LOGO_URL = "https://www.parklb.com/media/1031/longbeachlogostacked480px72dpi.png"
 data_type_dict = {}
